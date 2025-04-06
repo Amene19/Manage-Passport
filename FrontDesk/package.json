@@ -1,0 +1,71 @@
+{
+  "name": "passport-admin-frontdesk",
+  "version": "1.0.0",
+  "description": "Admin Dashboard for Passport Processing System",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "concurrently \"webpack --watch\" \"electron .\"",
+    "build": "webpack --mode production",
+    "package": "electron-builder build --win",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "com.passport.admin",
+    "productName": "Passport Admin Dashboard",
+    "directories": {
+      "output": "release/"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json",
+      "dummy-server.js"
+    ],
+    "extraResources": [
+      { "from": "../Backend", "to": "Backend" },
+      { "from": "../FrontWeb", "to": "FrontWeb" }
+    ]
+  },
+  "keywords": [
+    "passport",
+    "admin",
+    "electron",
+    "dashboard"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "date-fns": "^3.6.0",
+    "electron-squirrel-startup": "^1.0.1",
+    "electron-store": "^8.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.4.1",
+    "recharts": "^2.12.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.7",
+    "@types/node": "^20.11.30",
+    "@types/react": "^18.2.70",
+    "@types/react-dom": "^18.2.22",
+    "autoprefixer": "^10.4.19",
+    "concurrently": "^8.2.2",
+    "css-loader": "^6.10.0",
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3",
+    "electron-reload": "^2.0.0-alpha.1",
+    "html-webpack-plugin": "^5.6.0",
+    "mini-css-extract-plugin": "^2.8.1",
+    "postcss": "^8.4.38",
+    "postcss-loader": "^8.1.1",
+    "tailwindcss": "^3.4.1",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.3",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
