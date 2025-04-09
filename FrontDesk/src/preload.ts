@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
+import config from './config';
 
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object
@@ -21,7 +22,7 @@ contextBridge.exposeInMainWorld(
     // Expose a way to call the API directly
     callApi: async (endpoint: string, method: string, data?: any) => {
       try {
-        const baseUrl = 'http://localhost:3001/api';
+        const baseUrl = config.api.baseUrl;
         const headers = {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`

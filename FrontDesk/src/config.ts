@@ -3,6 +3,8 @@
  * This file contains environment-specific settings for the application
  */
 
+import { getApiUrl } from './utils/network';
+
 interface Config {
   api: {
     baseUrl: string;
@@ -45,7 +47,7 @@ const devConfig: Config = {
 // Production configuration
 const prodConfig: Config = {
   api: {
-    baseUrl: process.env.API_URL || 'http://localhost:3001',
+    baseUrl: getApiUrl(),
     endpoints: {
       login: '/api/auth/login',
       signup: '/api/auth/signup',

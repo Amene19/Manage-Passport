@@ -200,7 +200,7 @@ function startBackendServer() {
   }
   
   // Start the backend server using npm start
-  backendProcess = spawn('npm', ['start'], { 
+  backendProcess = spawn('npm', ['run', 'dev'], { 
     cwd: backendPath,
     shell: true,
     stdio: 'pipe'  // Capture stdout and stderr

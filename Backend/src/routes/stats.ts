@@ -20,28 +20,28 @@ router.get('/daily', async (req, res) => {
           FROM passports p2
           JOIN passport_categories pc ON p2.id = pc.passport_id
           JOIN categories c ON pc.category_id = c.id
-          WHERE DATE(p2.processed_at) = ? AND c.type = 'A'
+          WHERE DATE(p2.processed_at) = ? AND c.name = 'A'
         ) as categoryA,
         (
           SELECT COUNT(DISTINCT p2.id)
           FROM passports p2
           JOIN passport_categories pc ON p2.id = pc.passport_id
           JOIN categories c ON pc.category_id = c.id
-          WHERE DATE(p2.processed_at) = ? AND c.type = 'B'
+          WHERE DATE(p2.processed_at) = ? AND c.name = 'B'
         ) as categoryB,
         (
           SELECT COUNT(DISTINCT p2.id)
           FROM passports p2
           JOIN passport_categories pc ON p2.id = pc.passport_id
           JOIN categories c ON pc.category_id = c.id
-          WHERE DATE(p2.processed_at) = ? AND c.type = 'C'
+          WHERE DATE(p2.processed_at) = ? AND c.name = 'C'
         ) as categoryC,
         (
           SELECT COUNT(DISTINCT p2.id)
           FROM passports p2
           JOIN passport_categories pc ON p2.id = pc.passport_id
           JOIN categories c ON pc.category_id = c.id
-          WHERE DATE(p2.processed_at) = ? AND c.type = 'D'
+          WHERE DATE(p2.processed_at) = ? AND c.name = 'D'
         ) as categoryD,
         COUNT(DISTINCT CASE WHEN mr.requirement_type = 'B1' THEN p.id END) as missingDocuments,
         COUNT(DISTINCT CASE WHEN mr.requirement_type = 'B2' THEN p.id END) as invalidDocuments,
@@ -86,8 +86,7 @@ router.get('/history', async (req, res) => {
         GROUP_CONCAT(
           JSON_OBJECT(
             'id', c.id,
-            'name', c.name,
-            'type', c.type
+            'name', c.name
           )
         ) as categories
       FROM passports p
