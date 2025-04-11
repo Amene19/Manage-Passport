@@ -1,4 +1,4 @@
-import pool from '../config/database';
+import sql from '../config/database';
 import bcrypt from 'bcryptjs';
 import fs from 'fs';
 import path from 'path';
@@ -12,26 +12,30 @@ async function setupDatabase() {
     // Split the schema into individual statements
     const statements = schema.split(';').filter(stmt => stmt.trim());
     
-    for (const statement of statements) {
-      if (statement.trim()) {
-        await pool.execute(statement);
+    // Execute statements within a transaction
+    await sql.begin(async (txn) => {
+      for (const statement of statements) {
+        if (statement.trim()) {
+          await txn.unsafe(statement);
+        }
       }
-    }
+    });
+    
     console.log('✅ Database schema created successfully');
 
     // Create test user
     const hashedPassword = await bcrypt.hash('test123', 10);
     
     try {
-      await pool.execute(
-        'INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)',
-        ['testuser', hashedPassword, 'Test User', 'user']
-      );
+      await sql`
+        INSERT INTO users (username, password, name, role) 
+        VALUES ('testuser', ${hashedPassword}, 'Test User', 'user')
+      `;
       console.log('✅ Test user created successfully');
       console.log('Username: testuser');
       console.log('Password: test123');
     } catch (err: any) {
-      if (err.code === 'ER_DUP_ENTRY') {
+      if (err.code === '23505') { // PostgreSQL unique violation error code
         console.log('ℹ️ Test user already exists');
       } else {
         throw err;
@@ -39,13 +43,13 @@ async function setupDatabase() {
     }
 
     // Verify users
-    const [users] = await pool.execute('SELECT username, role FROM users');
+    const users = await sql`SELECT username, role FROM users`;
     console.log('Current users:', users);
 
   } catch (error) {
     console.error('❌ Setup failed:', error);
   } finally {
-    await pool.end();
+    await sql.end();
   }
 }
 
