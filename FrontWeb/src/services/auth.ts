@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = 'https://passport-management-backend.onrender.com';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -22,21 +22,24 @@ export interface User {
 
 export const authService = {
   login: async (credentials: LoginCredentials): Promise<User> => {
-    // For demo purposes, simulate login
-    if (credentials.username === 'admin' && credentials.password === 'admin') {
-      const user = {
-        id: '1',
-        username: 'admin',
-        role: 'admin',
-      };
-      localStorage.setItem('user', JSON.stringify(user));
-      return user;
+    try {
+      const response = await api.post('/api/auth/login', credentials);
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        return response.data.user;
+      }
+      throw new Error('Invalid login response');
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
     }
-    throw new Error('Invalid credentials');
   },
 
   logout: () => {
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
+    window.location.href = '/login';
   },
 
   getCurrentUser: (): User | null => {
@@ -45,8 +48,8 @@ export const authService = {
   },
 
   isAuthenticated: (): boolean => {
-    return !!localStorage.getItem('user');
+    return !!localStorage.getItem('token');
   },
 };
 
-export default authService; 
+export default authService;

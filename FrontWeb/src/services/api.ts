@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Category } from '../components/CategorySelector';
 
-const API_URL = 'http://localhost:3001/api';
+const API_URL = 'https://passport-management-backend.onrender.com';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -23,7 +23,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401 && !error.config.url.includes('/auth/login')) {
+    if (error.response?.status === 401 && !error.config.url.includes('/api/auth/login')) {
       // Clear token and redirect only if it's not a login request
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -86,7 +86,7 @@ export interface WorkerInfo {
 export const authService = {
   login: async (username: string, password: string) => {
     try {
-      const response = await api.post('/auth/login', { username, password });
+      const response = await api.post('/api/auth/login', { username, password });
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         // Also store user data
@@ -112,7 +112,7 @@ export const authService = {
     }
 
     try {
-      const response = await api.get('/auth/me');
+      const response = await api.get('/api/auth/me');
       return response.data;
     } catch (error) {
       console.error('Get current user error:', error);
@@ -127,7 +127,7 @@ export const authService = {
 
 export const passportService = {
   getAll: async () => {
-    const response = await api.get('/passports');
+    const response = await api.get('/api/passports');
     return response.data;
   },
   getById: async (id: number) => {
@@ -135,7 +135,7 @@ export const passportService = {
     return response.data;
   },
   create: async (data: any) => {
-    const response = await api.post('/passports', data);
+    const response = await api.post('/api/passports', data);
     return response.data;
   },
   updateStatus: async (id: number, status: string) => {
@@ -143,38 +143,38 @@ export const passportService = {
     return response.data;
   },
   scanPassport: async (scanType: ScanType) => {
-    const response = await api.post('/passports/scan', { scanType });
+    const response = await api.post('/api/passports/scan', { scanType });
     return response.data;
   },
   submitPassport: async (data: PassportData) => {
-    const response = await api.post('/passports/submit', data);
+    const response = await api.post('/api/passports/submit', data);
     return response.data;
   },
   getCategories: async (): Promise<Category[]> => {
-    const response = await api.get('/categories');
+    const response = await api.get('/api/categories');
     return response.data;
   },
   getDailyStats: async (): Promise<StatsData> => {
-    const response = await api.get('/stats/daily');
+    const response = await api.get('/api/stats/daily');
     return response.data;
   },
   getHistoryByDate: async (date: string): Promise<HistoryEntry[]> => {
-    const response = await api.get('/stats/history', { params: { date } });
+    const response = await api.get('/api/stats/history', { params: { date } });
     return response.data;
   },
   getCurrentWorker: async (): Promise<WorkerInfo> => {
-    const response = await api.get('/auth/me');
+    const response = await api.get('/api/auth/me');
     return response.data;
   }
 };
 
 export const categoryService = {
   getAll: async () => {
-    const response = await api.get('/categories');
+    const response = await api.get('/api/categories');
     return response.data;
   },
   create: async (data: any) => {
-    const response = await api.post('/categories', data);
+    const response = await api.post('/api/categories', data);
     return response.data;
   },
   update: async (id: number, data: any) => {
@@ -189,11 +189,11 @@ export const categoryService = {
 
 export const statsService = {
   getDailyStats: async (date?: string) => {
-    const response = await api.get('/stats/daily', { params: { date } });
+    const response = await api.get('/api/stats/daily', { params: { date } });
     return response.data;
   },
   getHistory: async (date?: string) => {
-    const response = await api.get('/stats/history', { params: { date } });
+    const response = await api.get('/api/stats/history', { params: { date } });
     return response.data;
   },
 };

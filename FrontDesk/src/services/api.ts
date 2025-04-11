@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Define base URL from environment or default to localhost
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+const BASE_URL = process.env.REACT_APP_API_URL || 'https://passport-management-backend.onrender.com';
 
 // Create an axios instance with default config
 const api = axios.create({

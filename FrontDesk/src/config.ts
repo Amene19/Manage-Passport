@@ -25,7 +25,7 @@ interface Config {
 // Development configuration (using local backend)
 const devConfig: Config = {
   api: {
-    baseUrl: 'http://localhost:3001',
+    baseUrl: 'https://passport-management-backend.onrender.com',
     endpoints: {
       login: '/api/auth/login',
       signup: '/api/auth/signup',
@@ -45,7 +45,7 @@ const devConfig: Config = {
 // Production configuration
 const prodConfig: Config = {
   api: {
-    baseUrl: process.env.API_URL || 'http://localhost:3001',
+    baseUrl: process.env.API_URL || 'https://passport-management-backend.onrender.com',
     endpoints: {
       login: '/api/auth/login',
       signup: '/api/auth/signup',
