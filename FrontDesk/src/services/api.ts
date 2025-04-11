@@ -9,8 +9,8 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  // Set longer timeout to avoid quick failures
-  timeout: 10000
+  // Set longer timeout to avoid quick failures on Render.com cold starts
+  timeout: 200000
 });
 
 // Add a request interceptor to add auth token from localStorage
@@ -29,7 +29,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     // Skip transformation for auth endpoints
-    if (response.config.url?.includes('/auth/')) {
+    if (response.config.url?.includes('/api/auth/')) {
       return response;
     }
     
@@ -81,7 +81,7 @@ export const authService = {
   login: async (username: string, password: string) => {
     try {
       console.log('Attempting login for user:', username);
-      const response = await api.post('/auth/login', { username, password });
+      const response = await api.post('/api/auth/login', { username, password });
       console.log('Login response:', response.data);
       
       const { token, user } = response.data;
@@ -150,7 +150,7 @@ export const authService = {
 export const passportService = {
   getPassports: async (params: any = {}) => {
     try {
-      const response = await api.get('/passports', { params });
+      const response = await api.get('/api/passports', { params });
       // Transform the response to match our expected format
       return {
         data: Array.isArray(response.data) ? response.data : [],
@@ -164,7 +164,7 @@ export const passportService = {
   
   getPassportById: async (id: string) => {
     try {
-      const response = await api.get(`/passports/${id}`);
+      const response = await api.get(`/api/passports/${id}`);
       return {
         data: response.data,
         success: true
@@ -187,7 +187,7 @@ export const passportService = {
       };
 
       console.log('Sending update request:', { id, data: formattedData });
-      const response = await api.put(`/passports/${id}`, formattedData);
+      const response = await api.put(`/api/passports/${id}`, formattedData);
       return {
         data: response.data,
         success: true
@@ -200,7 +200,7 @@ export const passportService = {
   
   deletePassport: async (id: string) => {
     try {
-      const response = await api.delete(`/passports/${id}`);
+      const response = await api.delete(`/api/passports/${id}`);
       return {
         data: response.data,
         success: true
@@ -213,7 +213,7 @@ export const passportService = {
   
   getCategories: async () => {
     try {
-      return await api.get('/categories');
+      return await api.get('/api/categories');
     } catch (error) {
       console.error('Error fetching categories:', error);
       throw error;
@@ -222,7 +222,7 @@ export const passportService = {
   
   getRequirements: async () => {
     try {
-      return await api.get('/requirements');
+      return await api.get('/api/requirements');
     } catch (error) {
       console.error('Error fetching requirements:', error);
       throw error;
@@ -232,27 +232,27 @@ export const passportService = {
 
 // Stats services
 export const statsService = {
-  getDailyStats: (date?: string) => api.get('/stats/daily', { params: { date } }),
+  getDailyStats: (date?: string) => api.get('/api/stats/daily', { params: { date } }),
   
-  getHistory: (date?: string) => api.get('/stats/history', { params: { date } }),
+  getHistory: (date?: string) => api.get('/api/stats/history', { params: { date } }),
   
-  getWorkerStats: (workerId: number) => api.get(`/stats/worker/${workerId}`),
+  getWorkerStats: (workerId: number) => api.get(`/api/stats/worker/${workerId}`),
   
   getWorkerPassports: (workerId: number, date?: string) => 
-    api.get(`/stats/worker/${workerId}/passports`, { params: { date } })
+    api.get(`/api/stats/worker/${workerId}/passports`, { params: { date } })
 };
 
 // Worker services
 export const workerService = {
-  getWorkers: () => api.get('/workers'),
+  getWorkers: () => api.get('/api/workers'),
   
-  getWorkerById: (id: number) => api.get(`/workers/${id}`),
+  getWorkerById: (id: number) => api.get(`/api/workers/${id}`),
   
-  updateWorker: (id: number, data: any) => api.put(`/workers/${id}`, data),
+  updateWorker: (id: number, data: any) => api.put(`/api/workers/${id}`, data),
   
-  createWorker: (data: any) => api.post('/workers', data),
+  createWorker: (data: any) => api.post('/api/workers', data),
   
-  deleteWorker: (id: number) => api.delete(`/workers/${id}`)
+  deleteWorker: (id: number) => api.delete(`/api/workers/${id}`)
 };
 
 export default api; 
