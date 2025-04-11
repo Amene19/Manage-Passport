@@ -8,6 +8,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 30000
 });
 
 // Add token to requests if it exists
@@ -131,7 +132,7 @@ export const passportService = {
     return response.data;
   },
   getById: async (id: number) => {
-    const response = await api.get(`/passports/${id}`);
+    const response = await api.get(`/api/passports/${id}`);
     return response.data;
   },
   create: async (data: any) => {
@@ -139,7 +140,7 @@ export const passportService = {
     return response.data;
   },
   updateStatus: async (id: number, status: string) => {
-    const response = await api.patch(`/passports/${id}/status`, { status });
+    const response = await api.patch(`/api/passports/${id}/status`, { status });
     return response.data;
   },
   scanPassport: async (scanType: ScanType) => {
@@ -178,11 +179,11 @@ export const categoryService = {
     return response.data;
   },
   update: async (id: number, data: any) => {
-    const response = await api.put(`/categories/${id}`, data);
+    const response = await api.put(`/api/categories/${id}`, data);
     return response.data;
   },
   delete: async (id: number) => {
-    const response = await api.delete(`/categories/${id}`);
+    const response = await api.delete(`/api/categories/${id}`);
     return response.data;
   },
 };

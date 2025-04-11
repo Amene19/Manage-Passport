@@ -17,7 +17,6 @@ if (require('electron-squirrel-startup')) {
 // }
 
 let mainWindow: Electron.BrowserWindow | null;
-let backendProcess: any = null;
 let frontWebProcess: any = null;
 
 // Function to get the local IP address
@@ -129,140 +128,6 @@ function startFrontWebApp() {
   }, 10000); // Show after 10 seconds to give time for the app to start
 }
 
-// Function to start the dummy server as fallback
-function startDummyServer() {
-  console.log('Starting dummy server as fallback...');
-  
-  let appDir = path.join(__dirname, '..');
-  let dummyServerPath = path.join(appDir, 'dummy-server.js');
-  
-  // Check if we're in a packaged app (production mode)
-  if (app.isPackaged) {
-    // In packaged app, the dummy-server.js is included in the app resources
-    appDir = path.dirname(app.getAppPath());
-    dummyServerPath = path.join(appDir, 'dummy-server.js');
-    console.log('Running in production mode, using dummy server at:', dummyServerPath);
-  } else {
-    console.log('Running in development mode, using dummy server at:', dummyServerPath);
-  }
-  
-  if (!fs.existsSync(dummyServerPath)) {
-    console.error(`ERROR: Dummy server not found at ${dummyServerPath}`);
-    return;
-  }
-  
-  backendProcess = spawn('node', [dummyServerPath], {
-    cwd: appDir,
-    shell: true,
-    stdio: 'pipe'
-  });
-  
-  backendProcess.stdout.on('data', (data: Buffer) => {
-    console.log(`Dummy server stdout: ${data.toString()}`);
-  });
-  
-  backendProcess.stderr.on('data', (data: Buffer) => {
-    console.error(`Dummy server stderr: ${data.toString()}`);
-  });
-  
-  backendProcess.on('close', (code: number) => {
-    console.log(`Dummy server process exited with code ${code}`);
-    backendProcess = null;
-  });
-  
-  console.log('Waiting for dummy server to initialize...');
-}
-
-// Function to start the backend server
-function startBackendServer() {
-  console.log('Starting backend server...');
-  
-  // Get the path to the Backend directory
-  // In development mode, it's at the same level as FrontDesk
-  // In production mode, it's in the extraResources directory
-  let backendPath = path.join(__dirname, '..', '..', 'Backend');
-  
-  // Check if we're in a packaged app (production mode)
-  if (app.isPackaged) {
-    // In packaged app, the Backend is in extraResources
-    backendPath = path.join(process.resourcesPath, 'Backend');
-    console.log('Running in production mode, using Backend path:', backendPath);
-  } else {
-    console.log('Running in development mode, using Backend path:', backendPath);
-  }
-  
-  // Check if the Backend directory exists
-  if (!fs.existsSync(backendPath)) {
-    console.error(`ERROR: Backend directory not found at ${backendPath}`);
-    console.log('Falling back to dummy server...');
-    startDummyServer();
-    return;
-  }
-  
-  // Start the backend server using npm start
-  backendProcess = spawn('npm', ['run', 'dev'], { 
-    cwd: backendPath,
-    shell: true,
-    stdio: 'pipe'  // Capture stdout and stderr
-  });
-  
-  // Flag to check if backend failed to start
-  let backendFailed = false;
-  
-  // Log backend output
-  backendProcess.stdout.on('data', (data: Buffer) => {
-    console.log(`Backend stdout: ${data.toString()}`);
-  });
-  
-  backendProcess.stderr.on('data', (data: Buffer) => {
-    const error = data.toString();
-    console.error(`Backend stderr: ${error}`);
-    
-    // Check for common errors
-    if (error.includes('EADDRINUSE')) {
-      backendFailed = true;
-      console.log('Port already in use. The backend server or another service might be already running.');
-      
-      // Show dialog to user
-      if (mainWindow) {
-        dialog.showMessageBox(mainWindow, {
-          type: 'warning',
-          title: 'Backend Server Issue',
-          message: 'The backend server could not start because port 3001 is already in use.',
-          detail: 'This could mean that:\n1. The backend server is already running\n2. Another application is using port 3001\n\nThe application will continue with existing backend or fallback to the dummy server.',
-          buttons: ['OK']
-        });
-      }
-      
-      // Check if we need to start the dummy server
-      if (backendProcess) {
-        console.log('Terminating failed backend process...');
-        backendProcess.kill();
-        backendProcess = null;
-      }
-      
-      // We don't need to start dummy server if real backend is already running
-      // If you want to force dummy server, uncomment the line below
-      // startDummyServer();
-    }
-  });
-  
-  backendProcess.on('close', (code: number) => {
-    console.log(`Backend process exited with code ${code}`);
-    
-    // If backend failed and we haven't already started dummy server
-    if (code !== 0 && !backendFailed) {
-      console.log('Backend server failed to start. Falling back to dummy server...');
-      startDummyServer();
-    }
-    
-    backendProcess = null;
-  });
-  
-  // Give the backend some time to start up
-  console.log('Waiting for backend server to initialize...');
-}
-
 function createWindow() {
   // Create the browser window
   mainWindow = new BrowserWindow({
@@ -325,9 +190,6 @@ app.whenReady().then(() => {
   // Create the window first so we can show dialogs if needed
   createWindow();
   
-  // Start the backend server
-  startBackendServer();
-  
   // Start the FrontWeb application
   startFrontWebApp();
   
@@ -349,12 +211,6 @@ app.on('window-all-closed', () => {
 
 // Clean up all processes when the app is about to quit
 app.on('will-quit', () => {
-  if (backendProcess) {
-    console.log('Terminating backend server...');
-    backendProcess.kill();
-    backendProcess = null;
-  }
-  
   if (frontWebProcess) {
     console.log('Terminating FrontWeb application...');
     frontWebProcess.kill();
