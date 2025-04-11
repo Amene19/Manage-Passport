@@ -3,8 +3,8 @@ services:
     name: passport-management-backend
     runtime: node
     plan: free
-    buildCommand: cd Backend && npm install && npm install typescript && (npx tsc || true)
-    startCommand: cd Backend && node dist/index.js
+    buildCommand: cd Backend && npm install && npm install ts-node -g && npm install typescript
+    startCommand: cd Backend && npx ts-node src/index.ts
     envVars:
       - key: NODE_ENV
         value: production
