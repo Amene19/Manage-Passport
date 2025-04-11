@@ -1,1 +1,18 @@
- 
+services:
+  - type: web
+    name: passport-management-backend
+    runtime: node
+    plan: free
+    buildCommand: cd Backend && npm install && npm install typescript && (npx tsc || true)
+    startCommand: cd Backend && node dist/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 24h
