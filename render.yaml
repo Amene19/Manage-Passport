@@ -2,6 +2,7 @@ services:
   - type: web
     name: passport-management-backend
     runtime: node
+    plan: free
     buildCommand: cd Backend && npm install && npm run build
     startCommand: cd Backend && node dist/index.js
     envVars:
