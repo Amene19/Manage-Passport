@@ -7,10 +7,10 @@ async function createUser(username: string, password: string, name: string, role
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Insert the user
-    const [result] = await pool.execute(
-      'INSERT INTO users (username, password, name, role) VALUES (?, ?, ?, ?)',
-      [username, hashedPassword, name, role]
-    );
+    const result = await pool`
+      INSERT INTO users (username, password, name, role) 
+      VALUES (${username}, ${hashedPassword}, ${name}, ${role})
+    `;
 
     console.log('User created successfully!');
     console.log('Username:', username);
@@ -18,8 +18,7 @@ async function createUser(username: string, password: string, name: string, role
   } catch (error) {
     console.error('Error creating user:', error);
   } finally {
-    // Close the pool
-    await pool.end();
+    // Connection pooling is managed by the postgres library
   }
 }
 

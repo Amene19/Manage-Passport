@@ -59,6 +59,7 @@ export interface DailyStats {
 export interface AuthenticatedRequest extends Request {
   user?: {
     userId: number;
+    username: string; // Added to match JwtPayload
     name: string;
     role: string;
   };
