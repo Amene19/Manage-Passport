@@ -1,0 +1,41 @@
+const mysql = require('mysql2/promise');
+const bcrypt = require('bcryptjs');
+require('dotenv').config();
+
+// Database configuration from .env
+const dbConfig = {
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
+};
+
+async function createAdminUser() {
+  try {
+    console.log('Creating admin user...');
+    
+    // Create a connection
+    const connection = await mysql.createConnection(dbConfig);
+    
+    // Generate a hash for password 'admin123'
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash('admin123', saltRounds);
+    
+    // Insert admin user
+    const [result] = await connection.execute(
+      'INSERT INTO users (name, username, password, role) VALUES (?, ?, ?, ?)',
+      ['Administrator', 'admin', hashedPassword, 'admin']
+    );
+    
+    console.log(`Admin user created with ID: ${result.insertId}`);
+    
+    // Close the connection
+    await connection.end();
+    
+    console.log('Done!');
+  } catch (error) {
+    console.error('Error creating admin user:', error.message);
+  }
+}
+
+createAdminUser(); 
