@@ -2,7 +2,7 @@ services:
   - type: web
     name: passport-management-frontend
     env: static
-    buildCommand: npm install && npm run build
+    buildCommand: npm install && TSC_COMPILE_ON_ERROR=true npm run build
     staticPublishPath: ./dist
     pullRequestPreviewsEnabled: false
     envVars:

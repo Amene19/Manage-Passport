@@ -62,6 +62,9 @@ export interface StatsData {
   missingDocuments: number;
   invalidDocuments: number;
   additionalInfoRequired: number;
+  totalScanned: number;
+  pendingRequirements: number;
+  categoriesStats: { [category: string]: number };
   workerStats: {
     [workerId: string]: {
       name: string;

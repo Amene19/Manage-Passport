@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import passportService, { PassportData, ScanType, PassportStatus, HistoryEntry } from '../services/api';
-import CategorySelector, { Category } from '../components/CategorySelector';
+import passportService, { ScanType, HistoryEntry } from '../services/api';
+import { Category } from '../components/CategorySelector';
 import ConfirmationDialog from '../components/ConfirmationDialog';
 
 const PassportScanner: React.FC = () => {
@@ -14,7 +14,6 @@ const PassportScanner: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showPdfButton, setShowPdfButton] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [currentWorker, setCurrentWorker] = useState<string>('');
   const [scannedPassports, setScannedPassports] = useState<Set<string>>(new Set());
   const [todayPassports, setTodayPassports] = useState<HistoryEntry[]>([]);
 
@@ -29,13 +28,11 @@ const PassportScanner: React.FC = () => {
 
   const loadInitialData = async () => {
     try {
-      const [categoriesData, workerData, historyData] = await Promise.all([
+      const [categoriesData, historyData] = await Promise.all([
         passportService.getCategories(),
-        passportService.getCurrentWorker(),
         passportService.getHistoryByDate(format(new Date(), 'yyyy-MM-dd')),
       ]);
       setCategories(categoriesData);
-      setCurrentWorker(workerData.name);
       setTodayPassports(historyData);
     } catch (err) {
       setError('Failed to load initial data. Please try again later.');

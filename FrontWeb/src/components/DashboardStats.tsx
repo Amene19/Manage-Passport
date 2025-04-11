@@ -38,10 +38,13 @@ const StatCard: React.FC<{
 );
 
 const DashboardStats: React.FC<DashboardStatsProps> = ({ stats }) => {
-  const totalCategories = Object.values(stats.categoriesStats).reduce(
-    (sum, count) => sum + count,
-    0
-  );
+  // Safely get the total categories with fallback to 0
+  const totalCategories = stats.categoriesStats 
+    ? Object.values(stats.categoriesStats).reduce(
+        (sum: number, count: number) => sum + count,
+        0
+      )
+    : 0;
 
   return (
     <div className="space-y-6">
@@ -50,7 +53,7 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ stats }) => {
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard
           title="Total Passports Scanned"
-          value={stats.totalScanned}
+          value={stats.totalScanned || stats.totalPassports || 0}
           icon={<DocumentCheckIcon className="h-6 w-6" />}
           color="text-green-600"
         />
@@ -62,7 +65,7 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ stats }) => {
         />
         <StatCard
           title="Pending Requirements"
-          value={stats.pendingRequirements}
+          value={stats.pendingRequirements || (stats.missingDocuments + stats.invalidDocuments + stats.additionalInfoRequired) || 0}
           icon={<ExclamationTriangleIcon className="h-6 w-6" />}
           color="text-yellow-600"
         />
@@ -74,7 +77,7 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ stats }) => {
             Categories Breakdown
           </h3>
           <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {Object.entries(stats.categoriesStats).map(([category, count]) => (
+            {stats.categoriesStats && Object.entries(stats.categoriesStats).map(([category, count]) => (
               <div
                 key={category}
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-md"
@@ -83,7 +86,7 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ stats }) => {
                   {category}
                 </span>
                 <span className="text-sm font-semibold text-gray-900">
-                  {count}
+                  {count.toString()}
                 </span>
               </div>
             ))}
