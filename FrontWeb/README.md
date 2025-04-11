@@ -1,54 +1,53 @@
-# React + TypeScript + Vite
+# Passport Management Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the web interface for the passport management system.
 
-Currently, two official plugins are available:
+## Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+To run the development server:
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Building for Production
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+To build the application for production:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm install
+npm run build
 ```
+
+This will generate a `dist` directory with the production build.
+
+## Deployment to Render.com
+
+This project can be easily deployed to Render.com using the provided `render.yaml` file. 
+
+### Steps:
+
+1. Push your changes to GitHub
+2. Go to [Render.com Dashboard](https://dashboard.render.com/)
+3. Click "New" and select "Blueprint"
+4. Connect your GitHub repository
+5. Select the repository and click "Apply Blueprint"
+6. Render will automatically detect the `render.yaml` file and set up the service
+
+### Manual Deployment
+
+If you prefer to set up the service manually:
+
+1. Go to [Render.com Dashboard](https://dashboard.render.com/)
+2. Click "New" and select "Static Site"
+3. Connect your GitHub repository
+4. Enter the following settings:
+   - Name: passport-management-frontend
+   - Build Command: `npm install && npm run build`
+   - Publish Directory: `dist`
+5. Click "Create Static Site"
+
+## Environment Variables
+
+No additional environment variables are needed as the backend URL is hardcoded in the application.
