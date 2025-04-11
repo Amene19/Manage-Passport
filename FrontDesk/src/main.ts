@@ -190,8 +190,21 @@ app.whenReady().then(() => {
   // Create the window first so we can show dialogs if needed
   createWindow();
   
-  // Start the FrontWeb application
-  startFrontWebApp();
+  // No longer starting FrontWeb locally since it's deployed to Render.com
+  // startFrontWebApp();
+  
+  // Show message about web interface being available on Render.com
+  setTimeout(() => {
+    if (mainWindow) {
+      dialog.showMessageBox(mainWindow, {
+        type: 'info',
+        title: 'Web Interface Available Online',
+        message: 'Web Interface is Deployed Online',
+        detail: 'Workers can access the web interface at:\n\nhttps://passport-management-frontend.onrender.com\n\nThe local version is no longer started automatically.',
+        buttons: ['OK']
+      });
+    }
+  }, 3000);
   
   app.on('activate', () => {
     // On macOS, re-create the window when the dock icon is clicked
@@ -211,11 +224,12 @@ app.on('window-all-closed', () => {
 
 // Clean up all processes when the app is about to quit
 app.on('will-quit', () => {
-  if (frontWebProcess) {
-    console.log('Terminating FrontWeb application...');
-    frontWebProcess.kill();
-    frontWebProcess = null;
-  }
+  // No longer needed since FrontWeb is not started locally
+  // if (frontWebProcess) {
+  //   console.log('Terminating FrontWeb application...');
+  //   frontWebProcess.kill();
+  //   frontWebProcess = null;
+  // }
 });
 
 // IPC handlers for communication with the renderer process
